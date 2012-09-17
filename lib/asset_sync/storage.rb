@@ -105,15 +105,13 @@ module AssetSync
     def upload_file(f)
       # TODO output files in debug logs as asset filename only.
       one_year = 31557600
-      ext = File.extname( f )[1..-1]
-      mime = Mime::Type.lookup_by_extension( ext )
       file = {
         :key => f,
         :body => File.open("#{path}/#{f}"),
         :public => true,
         :cache_control => "public, max-age=#{one_year}",
         :expires => CGI.rfc1123_date(Time.now + one_year),
-        :content_type => mime
+        :content_type => mime_type(f)
       }
 
       gzipped = "#{path}/#{f}.gz"
@@ -179,6 +177,14 @@ module AssetSync
 
     def ignore_existing_remote_files?
       self.config.existing_remote_files == 'ignore'
+    end
+
+    def mime_type(f)
+      if defined?(Mime)
+        Mime::Type.lookup_by_extension(File.extname(f)[1..-1])
+      else
+        (MIME::Types.type_for(f).first || 'application/octet-stream').to_s
+      end
     end
   end
 end
