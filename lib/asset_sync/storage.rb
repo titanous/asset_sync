@@ -122,7 +122,7 @@ module AssetSync
         # as we will overwrite file.css with file.css.gz if it exists.
         log "Ignoring: #{f}"
         ignore = true
-      elsif config.gzip? && File.exists?(gzipped)
+      elsif config.gzip? && File.exists?(gzipped) && File.basename(f) != 'manifest.json'
         original_size = File.size("#{path}/#{f}")
         gzipped_size  = File.size(gzipped)
 
